@@ -1,0 +1,58 @@
+<Button>:
+    font_size: 20
+    color: 0.1,0.5,0.6,1
+    size_hint: 0.2,0.1
+<MainWindow>:
+    name: "main"
+    FloatLayout:
+        Label:
+            text: "Choose your decoration method "
+            size_hint: 0.5, 0.2
+            pos_hint: {"x":0.28, "top":0.7}
+            font_size: (root.width**2 + root.height**2) / 14**4
+
+        Button:
+            text: "Paint Wall"
+            pos_hint: {"x":0.2, "top":0.5}
+            on_release:
+                app.root.current = "wall"
+                root.manager.transition.direction = "left"
+        Button:
+            text: "Add Object"
+            pos_hint: {"x":0.6, "top":0.5}
+            on_release:
+                app.root.current = "obj"
+                root.manager.transition.direction = "left"
+<WallWindow>:
+    test:test
+    name: "wall"
+    Image:
+        id:test
+        size_hint_x: 1
+        size_hint_y: 1
+        allow_stretch: True
+        source: "test.jpg"
+    Button:
+        text: "Go Back"
+        on_release:
+            app.root.current = "main"
+            root.manager.transition.direction = "right"
+    Button:
+        text: "Colors"
+        pos_hint: {"x":0.8, "top":0.1}
+        on_release:
+            root.colors()
+
+    Button:
+        text: "Paint"
+        pos_hint: {"x":0.4, "top":0.1}
+        on_release:
+            root.change()
+<ObjWindow>:
+    name: "obj"
+    Button:
+        text: "Go Back"
+        on_release:
+            app.root.current = "main"
+            root.manager.transition.direction = "right"
+<P>:
