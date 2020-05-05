@@ -30,7 +30,7 @@ from kivy.core.window import Window
 #request_permissions([Permission.WRITE_EXTERNAL_STORAGE,Permission.READ_EXTERNAL_STORAGE])
 #from android.storage import primary_external_storage_path
 SD_CARD = "D:"
-mcolor=(0,0,0,0)
+mcolor=(255,255,0,1)
 i=0
 mimage='boy.png'
 captured="obj1.jpg"
@@ -54,12 +54,12 @@ class CameraClick(Screen):
         Function to capture the images and give them the names
         according to their captured time and date.
         '''
-        #camera = self.ids['camera']
-        #timestr = time.strftime("%Y%m%d_%H%M%S")
-        #camera.export_to_png("IMG.png".format(timestr))
+        camera = self.ids['camera']
+        timestr = time.strftime("%Y%m%d_%H%M%S")
+        camera.export_to_png(SD_CARD+"/IMG.png")
         global  captured
-        captured="boy.png"
-        sm.current="obj"
+        captured=SD_CARD+"/IMG.png"
+        sm.current="check"
         print("Captured")
 
 def Simple_Wall(image_src='wallimages/wall4_2.jpg', color=(5, 94, 76, 0.2)):
@@ -138,7 +138,10 @@ def Long_Chair(image_src='wallimages/wall55.jpe', color=(5, 94, 76, 0.2)):
     # Fill in the Wall with the Specific Color
     cv2.drawContours(image, cnts, max_index, color, -1)
     return image
+def send(captured):
+    num_list = ["obj1.jpg", "obj2.jpg", "obj3.jpg"]
 
+    return num_list
 class ConfirmPopup(Popup):
     text = StringProperty('Do you want to save the photo?')
 
@@ -150,7 +153,7 @@ class ConfirmPopup(Popup):
     def ok(self):
         self.dispatch('on_ok')
         self.dismiss()
-        sm.current = "main"
+
 
     def cancel(self):
         self.dispatch('on_cancel')
@@ -158,7 +161,8 @@ class ConfirmPopup(Popup):
 
 
     def on_ok(self):
-        cv2.imwrite(SD_CARD+"/test2.jpg", mimage)
+        y=cv2.imread(mimage)
+        cv2.imwrite(SD_CARD+"/myph.jpg", y)
         sm.current = "main"
 
 
@@ -197,6 +201,23 @@ def show_popup():
 def popup2():
     h=ConfirmPopup()
     h.open()
+class CheckImg(Screen):
+    objs = ObjectProperty(None)
+    yarb = ObjectProperty(None)
+    text = StringProperty("Select your object")
+
+    def on_enter(self):
+        img = send(captured)
+        self.text="kkkkkkkkkkkkkkkkkkkkkkk"
+        for i in img:
+            submit = Button(background_normal=i)
+            submit.bind(on_press=self.pressed)
+            self.objs.add_widget(submit)
+    def pressed(self,i):
+        selected=i.background_normal
+        print("pressed")
+        sm.current="wall"
+        print(selected)
 
 class MainWindow(Screen):
 
@@ -208,57 +229,29 @@ class MainWindow(Screen):
 
 class WallWindow(Screen):
     test = ObjectProperty(None)
-    put = ObjectProperty(None)
-
     color = ObjectProperty(None)
-    start = ObjectProperty(None)
     paint = ObjectProperty(None)
     addobj=ObjectProperty(None)
     select=ObjectProperty(None)
-
-
-
-
-    def back(self):
-        #TODO confirmation
-        popup2()
-        self.start.opacity = 1
-        self.test.opacity = 0
-        self.color.opacity = 0
-        self.paint.opacity = 0
-        self.put.opacity = 0
-        self.addobj.opacity = 0
-
-
-    def manage(self):
+    def on_enter (self):
         global mimage
         global After
-        After=mimage
+        After = mimage
         self.test.source = mimage
         self.test.reload()
-        self.start.opacity = 0
-        self.test.opacity = 1
-        self.color.opacity = 1
-        self.paint.opacity = 1
-        self.put.opacity = 1
-        self.addobj.opacity = 1
-   # img_src = StringProperty('boy.png')
+        if(self.select.opacity==1):
+            print("hhhhhh")
+            self.mayarsara()
+    def mayarsara(self):
+        pass
     def colors(self):
         show_popup()
-        #self.add_widget(self.clr_picker)
-    def Mayarsara(self):
-        #After
-        #selected
-        self.select.opacity=1
-        #############################MAYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAR
-        #Window.bind(mouse_pos=lambda w, p: print((p)))
     def change(self):
         global mimage
         print("yyyyyyyyyyyy"+mimage)
         global mcolor
         if(mimage=='room1.jpg'):
             img=Simple_Wall(mimage,mcolor)
-
         elif (mimage=='room2.jpg'):
             img=Simple_Chair(mimage,mcolor)
         elif (mimage=='room3.jpg'):
@@ -287,12 +280,11 @@ class ObjWindow(Screen):
         print("image"+captured)
         if(i==0):
             self.mc1=captured
-            self.obj1.background_normal=captured
-
+            self.obj1.background_normal=self.mc1
             print("111")
         elif(i==1):
             self.mc2 = captured
-            self.obj2.background_normal = mc2
+            self.obj2.background_normal = self.mc2
             print("222")
         elif (i == 2):
             self.mc3 = captured
@@ -307,17 +299,14 @@ class ObjWindow(Screen):
         print(mimage)
         global selected
         selected=mimg
+        self.manager.get_screen("wall").select.opacity=1
         sm.current = "wall"
-
-        #new=Mayars("test2.jpg",mimg)
-
-
 class WindowManager(ScreenManager):
     pass
 
 kv = Builder.load_file("mymain.kv")
 sm = WindowManager()
-screens = [MainWindow(name="main"), WallWindow(name="wall"),ObjWindow(name="obj"),CameraClick(name="mcamera")]
+screens = [MainWindow(name="main"), WallWindow(name="wall"),ObjWindow(name="obj"),CameraClick(name="mcamera"),CheckImg(name="check")]
 for screen in screens:
     sm.add_widget(screen)
 
@@ -333,11 +322,13 @@ class MyMainApp(App):
     def key_input(self, window, key, scancode, codepoint, modifier):
         if key == 27:
             if(sm.current=="wall" ):
-                wall=WallWindow()
-                wall.back()
-
+                popup2()
             elif(sm.current=="obj"):
                 sm.current = "wall"
+            elif(sm.current=="mcamera"):
+                sm.current = "obj"
+            elif(sm.current=="check"):
+                sm.current = "mcamera"
             else:
                 App.get_running_app().stop()
             return True  # override the default behaviour
