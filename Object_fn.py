@@ -9,7 +9,6 @@ import numpy as np
 
 def Detect_Objects(img):
     #Yolo algorithm for Detection
- 
     net = cv2.dnn.readNet("C:/Users/Sara/Downloads/yolo/yolov3.weights",
                       "C:/Users/Sara/Downloads/yolo/yolov3.cfg")
     classes = []
@@ -17,9 +16,7 @@ def Detect_Objects(img):
         classes = [line.strip() for line in f.readlines()]
     #print(classes)
     layer_names = net.getLayerNames()
-    output_layers = [layer_names[i[0] - 1] for i in net.getUnconnectedOutLayers()]
-    colors = np.random.uniform(0 , 255 , size = (len(classes) , 3 ))
-    
+    output_layers = [layer_names[i[0] - 1] for i in net.getUnconnectedOutLayers()]    
     height , width , channels = img.shape
     
     #detect Furniture Image
@@ -61,21 +58,16 @@ def Detect_Objects(img):
 
     objs = []#store cropped objects for one image
 
-    font = cv2.FONT_HERSHEY_PLAIN
     for i in range (len(boxes)) :
         if ((i in indexes)) :
             for z in Furniture_list:
                 if classes[class_ids[i]] == z:
                     x_box , y_box , w_box , h_box = boxes[i]
-                    label = str (classes[class_ids[i]])
-                    color = colors[i]
-                    cv2.rectangle(img , (x_box,y_box) , ( x_box+w_box , y_box+h_box ) , color , 2 )
-                    cv2.putText(img , label , ( x_box , y_box + 30 ) , font , 2 , color , 3 )
                     objs.append ( img[ y_box : y_box+h_box , x_box: x_box+w_box ] )
 
     return(objs)
     
-    
+    ##############################################################################
 img = cv2.imread('C:/Users/Sara/Desktop/image/living_room.jpg' )
 objects = []
 objects = Detect_Objects(img)   
