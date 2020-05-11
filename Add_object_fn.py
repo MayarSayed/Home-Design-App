@@ -66,3 +66,5 @@ room_height,room_width,room_channels = room.shape
 room_after = add_obj(room,obj,200,400)
 plt.imshow(room_after)
 plt.show()
+#print(obj_height,obj_width,obj_channels)
+#print(room_height,room_width,room_channels)

@@ -23,6 +23,7 @@ import time
 from kivy.uix.boxlayout import BoxLayout
 from kivy.core.window import Window
 from kivy.core.window import Window
+import math
 
 #from android.storage import app_storage_path
 #settings_path = app_storage_path()
@@ -88,6 +89,58 @@ def Detect_Objects(img):
                     objs.append(img[y_box: y_box + h_box, x_box: x_box + w_box])
 
     return (objs)
+#function takes the room and object images and the selected position 
+#returns the image of the room adding the object to it
+def add_obj(room,obj,X,Y):
+    
+    obj_height,obj_width,obj_channels = obj.shape
+    
+    #starting positions
+    Start_height = math.floor(Y - (obj_height/2))
+    Start_width = math.floor(X -(obj_width/2))
+    room_height,room_width,room_channels = room.shape
+    
+    if(room_height > obj_height and room_width > obj_width):
+        #Case 1
+        if(Start_width < 0):
+            if(Start_height < 0):
+                room[0:obj_height,0:obj_width] = obj[0:obj_height,0:obj_width]
+                
+            elif(Start_height + obj_height > room_height ):
+                room[room_height-obj_height:room_height+obj_height,0:obj_width] = obj[0:obj_height,0:obj_width]
+                
+
+            else:
+                room[Start_height:Start_height+obj_height,0:obj_width] = obj[0:obj_height,0:obj_width]
+              
+
+        #Case 2
+        elif(Start_width +obj_width > room_width):
+            if(Start_height < 0):
+                room[0:obj_height,room_width-obj_width:room_width+obj_width] = obj[0:obj_height,0:obj_width]
+                
+            elif(Start_height + obj_height > room_height ):
+                room[room_height-obj_height:room_height+obj_height,room_width-obj_width:room_width+obj_width] = obj[0:obj_height,0:obj_width]
+               
+            else:
+                room[Start_height:Start_height+obj_height,room_width-obj_width:room_width+obj_width] = obj[0:obj_height,0:obj_width]
+                
+        #Case 3
+        elif(Start_height < 0):
+            room[0:obj_height,Start_width:Start_width+obj_width] = obj[0:obj_height,0:obj_width]
+           
+        
+        elif(Start_height + obj_height > room_height ):
+            room[room_height-obj_height:room_height+obj_height,Start_width:Start_width+obj_width] = obj[0:obj_height,0:obj_width]
+            
+        
+        else:  
+            room[Start_height:Start_height+obj_height,Start_width:Start_width+obj_width] = obj[0:obj_height,0:obj_width]
+            
+    
+    return(room)
+    
+    
 SD_CARD = "D:"
 mcolor=(255,255,0,1)
 i=0
