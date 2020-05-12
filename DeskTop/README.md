@@ -3,7 +3,7 @@ The decoration play a major role in determining the mood of the place, from this
 ## - Project Description: 
   It is a cross Platform that can work on both Desktop and android devices to help imagine changes in the decoration of a              room/place, saves the time and reach high quality as possible.
 
-## - Project main Features:
+## Project main Features:
   ### 1. Test Different Colors on the Walls 
   -- **Description** :   
       just choose the room you want to test the colors on its walls, then choose the color you want from the palette, finally click paint to watch the new wall color   
@@ -21,7 +21,7 @@ The decoration play a major role in determining the mood of the place, from this
 
   ### 3. Save the room picture by the new edits on your device 
   
-## - Project GUI Implementation: 
+## Project GUI Implementation: 
   ### -- Desktop Application :   
   Developed By **Kivy** which is an open source Python library which is used to create applications on Windows, Linux, MacOS, Android and iOS.  
     --- **Screen Shots**:  
