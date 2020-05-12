@@ -8,7 +8,7 @@ Project main Features:
 ### 1. Test Different Colors on the Walls    
 -- Description :  
 just choose the room you want to test the colors on its walls, then choose the color you want from the palette, finally click paint to watch the new wall color  
--- Screen Shots :  
+  
 ### 2. Test a new object scene in some place/room    
 -- steps :  
 1. choose the room you want to test  
@@ -24,8 +24,7 @@ or
 ## Project GUI Implementation:  
 ### -- Desktop Application :  
 Developed By Kivy which is an open source Python library which is used to create applications on Windows, Linux, MacOS, Android and iOS.  
---- Screen Shots:  
-![](ScreenShots/desktop.png)
+
 
 ### -- Android Application :  
 --- Configurations used to run Python/Kivy application to an Android :  
