@@ -41,13 +41,16 @@ def add_obj(room, obj, X, Y):
     Start_height = math.floor(Y - (obj_height / 2))
     Start_width = math.floor(X - (obj_width / 2))
     room_height, room_width, room_channels = room.shape
+    
     if(obj_width > 0.5*room_width):
-       obj = cv2.resize(obj,(math.floor(obj_width*0.4),math.floor(obj_height )))
+       obj = cv2.resize(obj,(math.floor(room_width*0.5),math.floor(obj_height )))
        obj_height,obj_width,obj_channels = obj.shape
 
     if(obj_height > 0.5*room_height):
-       obj = cv2.resize(obj,(math.floor(obj_width),math.floor(obj_height*0.4 )))
+       obj = cv2.resize(obj,(math.floor(obj_width),math.floor(room_height*0.5 )))
        obj_height,obj_width,obj_channels = obj.shape
+       
+       
     if (room_height > obj_height and room_width > obj_width):
         # Case 1
         if (Start_width < 0):
