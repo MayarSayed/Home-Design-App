@@ -61,24 +61,8 @@ def add_obj(room,obj,X,Y):
                 
             elif(Start_height + obj_height > room_height ):
                 print("case2_elif")
-                #room[room_height-obj_height:room_height+obj_height,room_width-obj_width:room_width+obj_width] = obj[0:obj_height,0:obj_width]
-                # TODO: Define our color selection boundaries in RGB values "change those numbers"
-                lower_green = np.array([240, 240, 240]) 
-                upper_green = np.array([255, 255,255])
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
+                room[room_height-obj_height:room_height+obj_height,room_width-obj_width:room_width+obj_width] = obj[0:obj_height,0:obj_width]
+               
             else:
                 print("case2_else")
                 room[Start_height:Start_height+obj_height,room_width-obj_width:room_width+obj_width] = obj[0:obj_height,0:obj_width]
@@ -100,8 +84,42 @@ def add_obj(room,obj,X,Y):
             
     
     return(room)
+    ###################################################
 
-obj = cv2.imread('C:/Users/Sara/Documents/GitHub2/Home-Design-App/new/obj2.jpg')
+###################
+
+def add_obj_exactly( image ,background_image ):
+    
+    obj_height1,obj_width1,obj_channels1 = image.shape
+
+    lower_green = np.array([255, 25, 255]) 
+    upper_green = np.array([255, 255,255])
+
+    mask = cv2.inRange(image, lower_green, upper_green)
+    masked_image = np.copy(image)
+
+    masked_image[mask != 0] = [255, 255, 255]
+
+            ###########################
+    fixed_background_image = cv2. cvtColor(background_image, cv2. COLOR_BGR2RGB)
+
+
+    crop_background_image = fixed_background_image[400:obj_height1+400,0:obj_width1]
+    mask2 = 255 - mask
+
+    masked_image2 = np.copy(crop_background_image)
+
+    masked_image2[mask2 != 0] = [255,255, 255]
+
+    complete_image = + masked_image + masked_image2
+
+    fixed_background_image[400:obj_height1+400,0:obj_width1] = complete_image[0:obj_height1,0:obj_width1]
+
+    return (fixed_background_image)
+
+
+###########################################################################
+obj = cv2.imread('C:/Users/Sara/Documents/GitHub2/Home-Design-App/new/obj4.jpg')
 
 
 obj_height,obj_width,obj_channels = obj.shape
@@ -111,6 +129,37 @@ room_height,room_width,room_channels = room.shape
 
 room_after = add_obj(room,obj,400,1000)
 plt.imshow(room_after)
-plt.show()
+plt.show()   
+
+
 #print(obj_height,obj_width,obj_channels)
 #print(room_height,room_width,room_channels)
+
+image = mpimg.imread('C:/Users/Sara/Documents/GitHub2/Home-Design-App/new/obj4.jpg')
+background_image = mpimg.imread('C:/Users/Sara/Documents/GitHub2/Home-Design-App/new/room1.jpg')
+
+res = add_obj_exactly( image ,background_image )
+
+#cv2.imshow("complete_image",fixed_background_image)
+plt.imshow(res)
+plt.show()   
+
+#cv2.imshow("complete_image",fixed_background_image)
+#plt.show()   
+#cv2.waitKey(0)
+#cv2.destroyAllWindows()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
