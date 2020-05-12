@@ -1,0 +1,260 @@
+<Button>:
+    font_size: 30
+    color: 0.1,0.5,0.6,1
+    size_hint: 0.2,0.1
+
+<MainWindow>:
+    name: "main"
+    BoxLayout:
+        orientation:'vertical'
+
+        Label:
+            text: "Choose your Room "
+            size_hint: 0.5, 0.2
+            pos_hint: {"x":0.28, "top":0.7}
+            font_size: (root.width**2 + root.height**2) / 14**4
+        BoxLayout:
+            orientation:'horizontal'
+            Splitter:
+                sizable_from: 'right'
+                Button:
+                    id:room1
+                    size_hint_x: 0.2
+                    size_hint_y: 1
+                    background_normal: "room1.jpg"
+                    on_release:
+                        root.travel("room1.jpg")
+
+            Button:
+                id:room2
+                size_hint_x: 0.2
+                size_hint_y: 1
+                background_normal: "room2.jpg"
+                on_release:
+                    root.travel("room2.jpg")
+        Splitter:
+            sizable_from: 'top'
+            BoxLayout:
+                orientation:'horizontal'
+                Splitter:
+                    sizable_from: 'right'
+                    Button:
+                        id:room3
+                        size_hint_x: 0.3
+                        size_hint_y: 1
+                        background_normal: "room3.jpg"
+                        on_release:
+                            root.travel("room3.jpg")
+
+                Button:
+                    id:room4
+                    size_hint_x: 0.3
+                    size_hint_y: 1
+                    background_normal: "room4.jpg"
+                    on_release:
+                        root.travel("room4.jpg")
+
+<WallWindow>:
+    paint:paint
+    test:test
+    color:color
+    addobj:addobj
+
+    select:select
+    name: "wall"
+
+    Label:
+        id:select
+        text: "select your object position "
+        size_hint: 0.5, 0.2
+        pos_hint: {"x":0.28, "top":1}
+        opacity : 0
+        font_size: (root.width**2 + root.height**2) / 14**4
+    Image:
+        id:test
+        opacity : 1
+        size_hint_x: 1
+        size_hint_y: 0.8
+        allow_stretch: True
+
+    Button:
+        id :addobj
+        text: "Get Objects"
+        opacity : 1
+        on_release:
+            app.root.current = "obj"
+    Button:
+        id:color
+        text: "Colors"
+        opacity : 1
+        pos_hint: {"x":0.8, "top":0.1}
+        on_release:
+            root.colors()
+
+    Button:
+        id:paint
+        text: "Paint"
+        opacity : 1
+        pos_hint: {"x":0.4, "top":0.1}
+        on_release:
+            root.change()
+    Button:
+        id:color
+        text: "back"
+        opacity : 1
+        pos_hint: {"x":0, "top":1}
+        on_release:
+            root.popup2()
+
+<ObjWindow>:
+    name: "obj"
+    obj1:obj1
+    obj2:obj2
+    obj3:obj3
+    obj4:obj4
+
+    BoxLayout:
+        orientation:'vertical'
+        Label:
+            text: "Select Your Prefered Object"
+            size_hint: 0.5, 0.2
+            pos_hint: {"x":0.28, "top":0.7}
+            font_size: (root.width**2 + root.height**2) / 14**4
+        Splitter:
+            sizable_from: 'bottom'
+            BoxLayout:
+                orientation:'horizontal'
+                Splitter:
+                    sizable_from: 'right'
+                    Button:
+                        id:obj1
+                        size_hint_x: 0.3
+                        size_hint_y: 1
+                        background_normal: root.mc1
+                        on_release:
+                            root.choose(root.mc1)
+                Splitter:
+                    sizable_from: 'left'
+                    Button:
+                        id:obj2
+                        size_hint_x: 0.3
+                        size_hint_y: 1
+                        background_normal: root.mc2
+                        on_release:
+                            root.choose(root.mc2)
+
+        BoxLayout:
+            orientation:'horizontal'
+            Splitter:
+                sizable_from: 'right'
+                Button:
+                    id:obj3
+                    size_hint_x: 0.3
+                    size_hint_y: 1
+                    background_normal: root.mc3
+                    on_release:
+                        root.choose(root.mc3)
+            Splitter:
+                sizable_from: 'left'
+                Button:
+                    id:obj4
+                    size_hint_x: 0.3
+                    size_hint_y: 1
+                    background_normal: root.mc4
+                    on_release:
+                        root.choose(root.mc4)
+        Splitter:
+            sizable_from: 'top'
+            BoxLayout:
+                orientation:'horizontal'
+                Splitter:
+                    sizable_from: 'right'
+                    Button:
+                        id:obj1
+                        size_hint_x: 0.3
+                        size_hint_y: 1
+                        background_normal:'obj5.jpeg'
+                        on_release:
+                            root.choose('obj5.jpeg')
+                Splitter:
+                    sizable_from: 'left'
+                    Button:
+                        id:obj2
+                        size_hint_x: 0.3
+                        size_hint_y: 1
+                        background_normal: 'obj6.jpg'
+                        on_release:
+                            root.choose('obj6.jpg')
+    Button:
+        id:color
+        text: "back"
+        opacity : 1
+        pos_hint: {"x":0, "top":1}
+        on_release:
+            app.root.current = "wall"
+            root.manager.transition.direction = "right"
+<P>:
+<-ConfirmPopup>:
+	GridLayout:
+		cols: 1
+		padding: '12dp'
+		pos_hint: {'center': (0.5, 0.5)}
+		size_hint_x: 0.66
+		size_hint_y: None
+		height: self.minimum_height
+
+		canvas:
+			Color:
+				rgba: root.background_color[:3] + [root.background_color[-1] * root._anim_alpha]
+			Rectangle:
+				size: root._window.size if root._window else (0, 0)
+
+			Color:
+				rgb: 1, 1, 1
+			BorderImage:
+				source: root.background
+				border: root.border
+				pos: self.pos
+				size: self.size
+
+		Label:
+			text: root.text
+			font_size: (root.width**2 + root.height**2) / 14**4
+			size_hint_y: None
+			height: self.texture_size[1] + dp(16)
+			text_size: self.width - dp(16), None
+			halign: 'center'
+
+		BoxLayout:
+			size_hint_y: None
+			height: sp(50)
+
+			Button:
+			    font_size: 30
+                color: 0.1,0.5,0.6,1
+                size_hint: 0.2,0.1
+				text: root.cancel_text
+				on_press: root.cancel()
+			Button:
+                font_size: 30
+                color: 0.1,0.5,0.6,1
+                size_hint: 0.2,0.1
+				text: root.ok_text
+				on_press: root.ok()
+<CheckImg>:
+    objs:objs
+    name:"check"
+    yarb:yarb
+    GridLayout:
+        cols:1
+        Label:
+            id:yarb
+            text: root.text
+            size_hint: 0.5, 0.2
+            pos_hint: {"x":0.28, "top":0.5}
+            opacity:1
+            font_size: (root.width**2 + root.height**2) / 14**4
+
+        GridLayout:
+            id:objs
+            cols:2
