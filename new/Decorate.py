@@ -160,13 +160,16 @@ class CameraClick(Screen):
         timestr = time.strftime("%Y%m%d_%H%M%S")
         camera.export_to_png(SD_CARD+"/IMG.png")
         global  captured
-        captured=SD_CARD+"/IMG.png"
+        #captured=SD_CARD+"/IMG.png"
+        captured='sara.jpeg'
         sm.current="check"
         print("Captured")
 
 def Simple_Wall(image_src='wallimages/wall4_2.jpg', color=(5, 94, 76, 0.2)):
     # Read in the image
     image = cv2.imread(image_src)
+
+
 
     # change image color to gray scale
     gray_image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
@@ -181,14 +184,15 @@ def Simple_Wall(image_src='wallimages/wall4_2.jpg', color=(5, 94, 76, 0.2)):
 
     # Fill in the Wall with the Specific Color
     cv2.drawContours(image, cnts, max_index, color, -1)
+    image = cv2.resize(image, (1280, 750), interpolation=cv2.INTER_AREA)
+
     return image
 
 
-def Simple_3Walls(image_src='wallimages/wall9_3.jpg', color=(5, 94, 76, 0.2)):
+def Simple_3Walls(image_src='room3.jpg', color=(5, 94, 76, 0.2)):
     # Read in the image
     image = cv2.imread(image_src)
-
-    # change image color to gray scale
+    # print('Image dimensions:', image.shape)    # change image color to gray scale
     image1 = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     gray_image = cv2.cvtColor(image1, cv2.COLOR_RGB2GRAY)
     (thresh, blackAndWhiteImage) = cv2.threshold(gray_image, 120, 255, cv2.THRESH_BINARY)
@@ -201,6 +205,8 @@ def Simple_3Walls(image_src='wallimages/wall9_3.jpg', color=(5, 94, 76, 0.2)):
     newimage = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     masked_image = np.copy(newimage)
     masked_image[mask == 0] = [0, 0, 0]
+    #masked_image = cv2.resize(masked_image, (4000, 3000), interpolation=cv2.INTER_AREA)
+
 
     # edges = cv2.Canny(gray_image,100,200)
     cnts, hierarchy = cv2.findContours(blackAndWhiteImage, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
@@ -213,12 +219,18 @@ def Simple_3Walls(image_src='wallimages/wall9_3.jpg', color=(5, 94, 76, 0.2)):
 
     # Load in a background image, and convert it to RGB
     background_image = image
+    background_image = cv2.resize(background_image, (4000, 3000), interpolation=cv2.INTER_AREA)
     resized = cv2.resize(background_image, (4000, 3000), interpolation=cv2.INTER_AREA)
-
+    mask=mask.astype(np.uint8)
+    mask = cv2.resize(mask, (4000, 3000), interpolation=cv2.INTER_AREA)
     new_mask = cv2.bitwise_not(mask)
+
+    new_mask = cv2.resize(new_mask, (4000, 3000), interpolation=cv2.INTER_AREA)
     masked_image_bg = cv2.bitwise_and(resized, resized, mask=new_mask)
+   # masked_image_bg = cv2.resize(masked_image_bg, (1280, 960), interpolation=cv2.INTER_AREA)
 
     complete_image = masked_image_bg + masked_image
+    complete_image = cv2.resize(complete_image, (1280, 750), interpolation=cv2.INTER_AREA)
 
     return complete_image
 
@@ -240,6 +252,8 @@ def Simple_Chair(image_src='wallimages/wall8.jpg', color=(5, 94, 76, 0.2)):
 
     # Fill in the Wall with the Specific Color
     cv2.drawContours(image, cnts, max_index, color, -1)
+    image = cv2.resize(image, (1280, 750), interpolation=cv2.INTER_AREA)
+
     return image
 
 
@@ -260,6 +274,8 @@ def Long_Chair(image_src='wallimages/wall55.jpe', color=(5, 94, 76, 0.2)):
 
     # Fill in the Wall with the Specific Color
     cv2.drawContours(image, cnts, max_index, color, -1)
+    image = cv2.resize(image, (1280, 750), interpolation=cv2.INTER_AREA)
+
     return image
 def send(captured):
     objects = []
@@ -327,14 +343,19 @@ class CheckImg(Screen):
     text = StringProperty("Select your object")
 
     def on_enter(self):
+        global captured
         img = send(captured)
-        self.text="kkkkkkkkkkkkkkkkkkkkkkk"
+        if(len(img)==0):
+            self.text="No object detected"
+        else:
+            self.text="Select your object"
         for i in img:
             cv2.imwrite('tt.jpg',i)
             submit = Button(background_normal='tt.jpg')
             submit.bind(on_press=self.pressed)
             self.objs.add_widget(submit)
     def pressed(self,i):
+        global selected
         selected=i.background_normal
         print("pressed")
         self.manager.get_screen("wall").select.opacity = 1
@@ -356,6 +377,10 @@ class WallWindow(Screen):
     paint = ObjectProperty(None)
     addobj=ObjectProperty(None)
     select=ObjectProperty(None)
+
+    def popup2(self):
+        h = ConfirmPopup()
+        h.open()
     def on_enter (self):
         global mimage
         global After
@@ -363,14 +388,13 @@ class WallWindow(Screen):
         self.test.source = After
         self.test.reload()
         if(self.select.opacity==1):
-            #Clock.schedule_once(self.mayarsara(),10)
-            Clock.schedule_once(lambda dt: self.mayarsara(), 5)
+            Clock.schedule_once(lambda dt: self.mayarsara(), 4)
     def mayarsara(self):
-        global y_clk,x_clk,After
+        global y_clk,x_clk,After,selected
         print("x_clk: "+str(x_clk))
         print("y_clk: " + str(y_clk))
         img1=cv2.imread(After)
-        img2=cv2.imread('obj1.jpg')
+        img2=cv2.imread(selected)
         img=add_obj(img1,img2,x_clk,y_clk)
         #cv2.imwrite("test2.jpg", img)
         cv2.imwrite('test2.jpg',img)
@@ -378,6 +402,7 @@ class WallWindow(Screen):
 
         self.test.source = After
         self.test.reload()
+        self.select.opacity=0
     def on_touch_down(self,touch):
         print("hhhhhhhhhhhhhhhhhhhhhhhhhha")
         global y_clk,x_clk
