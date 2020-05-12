@@ -1,7 +1,7 @@
 # # Wall Paint Functions
 
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
+#import matplotlib.pyplot as plt
+#import matplotlib.image as mpimg
 import cv2 
 import numpy as np
 
@@ -23,17 +23,15 @@ def Simple_Wall(image_src = 'wallimages/wall4_2.jpg' , color = (5, 94, 76,0.2) )
     #Fill in the Wall with the Specific Color
     cv2.drawContours(image, cnts, max_index, color , -1)
     return image
-    
 
-def Simple_3Walls(image_src = 'wallimages/wall9.jpg' , color = (5, 94, 76,0.2) ):
+def Simple_3Walls(image_src = 'wall9_3.jpg' , color = (5, 94, 76,0.2) ):
     # Read in the image
     image = mpimg.imread(image_src)
-
-    # change image color to gray scale
+    # print('Image dimensions:', image.shape)    # change image color to gray scale
     image1 = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     gray_image = cv2.cvtColor(image1, cv2.COLOR_RGB2GRAY)
     (thresh, blackAndWhiteImage) = cv2.threshold(gray_image, 120, 255, cv2.THRESH_BINARY)
-    
+
     lower_white = np.array([229, 229, 229])
     upper_white = np.array([255, 255, 255])
     # Define the masked area
@@ -54,15 +52,21 @@ def Simple_3Walls(image_src = 'wallimages/wall9.jpg' , color = (5, 94, 76,0.2) )
 
     # Load in a background image, and convert it to RGB
     background_image = image
-    resized = cv2.resize(background_image, (4000, 3000), interpolation=cv2.INTER_AREA)
+    background_image = cv2.resize(background_image, (1280, 750), interpolation=cv2.INTER_AREA)
+    resized = cv2.resize(background_image, (1280, 750), interpolation=cv2.INTER_AREA)
 
+    mask = mask.astype(np.uint8)
+    mask = cv2.resize(mask, (1280, 750), interpolation=cv2.INTER_AREA)
     new_mask = cv2.bitwise_not(mask)
+
+    new_mask = cv2.resize(new_mask, (1280, 750), interpolation=cv2.INTER_AREA)
     masked_image_bg = cv2.bitwise_and(resized, resized, mask=new_mask)
 
     complete_image = masked_image_bg + masked_image
 
     return complete_image
 
+    return complete_image
 
 def Simple_Chair(image_src = 'wallimages/wall8.jpg' , color = (5, 94, 76,0.2) ):
     # Read in the image
@@ -83,7 +87,6 @@ def Simple_Chair(image_src = 'wallimages/wall8.jpg' , color = (5, 94, 76,0.2) ):
     cv2.drawContours(image, cnts, max_index, color , -1)
     return image
 
-
 def Long_Chair(image_src = 'wallimages/wall55.jpe' , color = (5, 94, 76,0.2) ):
     # Read in the image
     image = mpimg.imread(image_src)
@@ -103,6 +106,7 @@ def Long_Chair(image_src = 'wallimages/wall55.jpe' , color = (5, 94, 76,0.2) ):
     cv2.drawContours(image, cnts, max_index, color , -1)
     return image
 
-
-
+n = Simple_3Walls()
+cv2.imshow("Hadeel" , n)
+cv2.waitKey(0)
 
