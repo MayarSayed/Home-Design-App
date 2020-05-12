@@ -34,23 +34,21 @@ y_clk=0
 
 
 def add_obj(room, obj, X, Y):
-    
     obj_height, obj_width, obj_channels = obj.shape
     Y = Y - 479
     # starting positions
     Start_height = math.floor(Y - (obj_height / 2))
     Start_width = math.floor(X - (obj_width / 2))
     room_height, room_width, room_channels = room.shape
-    
-    if(obj_width > 0.5*room_width):
-       obj = cv2.resize(obj,(math.floor(room_width*0.5),math.floor(obj_height )))
-       obj_height,obj_width,obj_channels = obj.shape
 
-    if(obj_height > 0.5*room_height):
-       obj = cv2.resize(obj,(math.floor(obj_width),math.floor(room_height*0.5 )))
-       obj_height,obj_width,obj_channels = obj.shape
-       
-       
+    if (obj_width > 0.5 * room_width):
+        obj = cv2.resize(obj, (math.floor(room_width * 0.5), math.floor(obj_height)))
+        obj_height, obj_width, obj_channels = obj.shape
+
+    if (obj_height > 0.5 * room_height):
+        obj = cv2.resize(obj, (math.floor(obj_width), math.floor(room_height * 0.5)))
+        obj_height, obj_width, obj_channels = obj.shape
+
     if (room_height > obj_height and room_width > obj_width):
         # Case 1
         if (Start_width < 0):
@@ -398,14 +396,16 @@ class WallWindow(Screen):
         self.test.source = After
         self.test.reload()
         if(self.select.opacity==1):
-            Clock.schedule_once(lambda dt: self.mayarsara(), 4)
+            Clock.schedule_once(lambda dt: self.mayarsara(), 2)
     def mayarsara(self):
         global y_clk,x_clk,After,selected
+        print("mayaaaaaaaaaar")
         print("x_clk: "+str(x_clk))
         print("y_clk: " + str(y_clk))
         img1=cv2.imread(After)
         img2=cv2.imread(selected)
-        img=add_obj(img1,img2,x_clk,y_clk)
+        img2=Detect_Objects(img2)
+        img=add_obj(img1,img2[0],x_clk,y_clk)
         #cv2.imwrite("test2.jpg", img)
         cv2.imwrite('test2.jpg',img)
         After='test2.jpg'
@@ -414,8 +414,10 @@ class WallWindow(Screen):
         self.test.reload()
         self.select.opacity=0
     def on_touch_down(self,touch):
-        print("hhhhhhhhhhhhhhhhhhhhhhhhhha")
+
         global y_clk,x_clk
+        print("x_clk: " + str(x_clk))
+        print("y_clk: " + str(y_clk))
         x_clk=touch.pos[0]
         y_clk = touch.pos[1]
         return super(WallWindow, self).on_touch_down(touch)
