@@ -24,7 +24,6 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.core.window import Window
 from kivy.core.window import Window
 import math
-
 #from android.storage import app_storage_path
 #settings_path = app_storage_path()
 #from android.permissions import request_permissions, Permission
@@ -32,6 +31,60 @@ import math
 #from android.storage import primary_external_storage_path
 x_clk=0
 y_clk=0
+
+
+def add_obj(room, obj, X, Y):
+    obj_height, obj_width, obj_channels = obj.shape
+
+    # starting positions
+    Start_height = math.floor(Y - (obj_height / 2))
+    Start_width = math.floor(X - (obj_width / 2))
+    room_height, room_width, room_channels = room.shape
+
+    if (room_height > obj_height and room_width > obj_width):
+        # Case 1
+        if (Start_width < 0):
+            if (Start_height < 0):
+                room[0:obj_height, 0:obj_width] = obj[0:obj_height, 0:obj_width]
+
+            elif (Start_height + obj_height > room_height):
+                room[room_height - obj_height:room_height + obj_height, 0:obj_width] = obj[0:obj_height, 0:obj_width]
+
+
+            else:
+                room[Start_height:Start_height + obj_height, 0:obj_width] = obj[0:obj_height, 0:obj_width]
+
+
+        # Case 2
+        elif (Start_width + obj_width > room_width):
+            if (Start_height < 0):
+                room[0:obj_height, room_width - obj_width:room_width + obj_width] = obj[0:obj_height, 0:obj_width]
+
+            elif (Start_height + obj_height > room_height):
+                room[room_height - obj_height:room_height + obj_height,
+                room_width - obj_width:room_width + obj_width] = obj[0:obj_height, 0:obj_width]
+
+            else:
+                room[Start_height:Start_height + obj_height, room_width - obj_width:room_width + obj_width] = obj[
+                                                                                                              0:obj_height,
+                                                                                                              0:obj_width]
+
+        # Case 3
+        elif (Start_height < 0):
+            room[0:obj_height, Start_width:Start_width + obj_width] = obj[0:obj_height, 0:obj_width]
+
+
+        elif (Start_height + obj_height > room_height):
+            room[room_height - obj_height:room_height + obj_height, Start_width:Start_width + obj_width] = obj[
+                                                                                                           0:obj_height,
+                                                                                                           0:obj_width]
+
+
+        else:
+            room[Start_height:Start_height + obj_height, Start_width:Start_width + obj_width] = obj[0:obj_height,
+                                                                                                0:obj_width]
+
+    return (room)
 def Detect_Objects(img):
     # Yolo algorithm for Detection
     net = cv2.dnn.readNet("yolov3.weights",
@@ -89,58 +142,6 @@ def Detect_Objects(img):
                     objs.append(img[y_box: y_box + h_box, x_box: x_box + w_box])
 
     return (objs)
-#function takes the room and object images and the selected position 
-#returns the image of the room adding the object to it
-def add_obj(room,obj,X,Y):
-    
-    obj_height,obj_width,obj_channels = obj.shape
-    
-    #starting positions
-    Start_height = math.floor(Y - (obj_height/2))
-    Start_width = math.floor(X -(obj_width/2))
-    room_height,room_width,room_channels = room.shape
-    
-    if(room_height > obj_height and room_width > obj_width):
-        #Case 1
-        if(Start_width < 0):
-            if(Start_height < 0):
-                room[0:obj_height,0:obj_width] = obj[0:obj_height,0:obj_width]
-                
-            elif(Start_height + obj_height > room_height ):
-                room[room_height-obj_height:room_height+obj_height,0:obj_width] = obj[0:obj_height,0:obj_width]
-                
-
-            else:
-                room[Start_height:Start_height+obj_height,0:obj_width] = obj[0:obj_height,0:obj_width]
-              
-
-        #Case 2
-        elif(Start_width +obj_width > room_width):
-            if(Start_height < 0):
-                room[0:obj_height,room_width-obj_width:room_width+obj_width] = obj[0:obj_height,0:obj_width]
-                
-            elif(Start_height + obj_height > room_height ):
-                room[room_height-obj_height:room_height+obj_height,room_width-obj_width:room_width+obj_width] = obj[0:obj_height,0:obj_width]
-               
-            else:
-                room[Start_height:Start_height+obj_height,room_width-obj_width:room_width+obj_width] = obj[0:obj_height,0:obj_width]
-                
-        #Case 3
-        elif(Start_height < 0):
-            room[0:obj_height,Start_width:Start_width+obj_width] = obj[0:obj_height,0:obj_width]
-           
-        
-        elif(Start_height + obj_height > room_height ):
-            room[room_height-obj_height:room_height+obj_height,Start_width:Start_width+obj_width] = obj[0:obj_height,0:obj_width]
-            
-        
-        else:  
-            room[Start_height:Start_height+obj_height,Start_width:Start_width+obj_width] = obj[0:obj_height,0:obj_width]
-            
-    
-    return(room)
-    
-    
 SD_CARD = "D:"
 mcolor=(255,255,0,1)
 i=0
@@ -361,15 +362,30 @@ class WallWindow(Screen):
         #After = mimage
         self.test.source = After
         self.test.reload()
+        if(self.select.opacity==1):
+            #Clock.schedule_once(self.mayarsara(),10)
+            Clock.schedule_once(lambda dt: self.mayarsara(), 5)
     def mayarsara(self):
-        global y_clk,x_clk
+        global y_clk,x_clk,After
         print("x_clk: "+str(x_clk))
+        print("y_clk: " + str(y_clk))
+        img1=cv2.imread(After)
+        img2=cv2.imread('obj1.jpg')
+        img=add_obj(img1,img2,x_clk,y_clk)
+        #cv2.imwrite("test2.jpg", img)
+        cv2.imwrite('test2.jpg',img)
+        After='test2.jpg'
+
+        self.test.source = After
+        self.test.reload()
     def on_touch_down(self,touch):
+        print("hhhhhhhhhhhhhhhhhhhhhhhhhha")
         global y_clk,x_clk
         x_clk=touch.pos[0]
         y_clk = touch.pos[1]
         return super(WallWindow, self).on_touch_down(touch)
     def colors(self):
+        print("bebo")
         show_popup()
     def change(self):
         global mimage,After
