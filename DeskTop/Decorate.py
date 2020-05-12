@@ -306,7 +306,7 @@ def Simple_Chair(image_src='wallimages/wall8.jpg', color=(5, 94, 76, 0.2)):
     (thresh, blackAndWhiteImage) = cv2.threshold(gray_image, 168, 255, cv2.THRESH_BINARY)
 
     # edges = cv.Canny(gray_image,100,200)
-    cnts, hierarchy = cv2.findContours(blackAndWhiteImage, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
+    _ , cnts, hierarchy = cv2.findContours(blackAndWhiteImage, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
 
     # Find the index of the largest contour (wall)
     areas = [cv2.contourArea(c) for c in cnts]
