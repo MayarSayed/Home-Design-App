@@ -29,20 +29,62 @@ import math
 #from android.permissions import request_permissions, Permission
 #request_permissions([Permission.WRITE_EXTERNAL_STORAGE,Permission.READ_EXTERNAL_STORAGE])
 #from android.storage import primary_external_storage_path
+
+import matplotlib.pyplot as plt
+
 x_clk=0
 y_clk=0
 
+def add_obj_exactly( obj ,room , Start_h , end_h ,start_w , end_w):
+    
+    obj_height1,obj_width1,obj_channels1 = obj.shape
+
+    lower_green = np.array([240, 240, 240]) 
+    upper_green = np.array([255, 255,255])
+
+    mask = cv2.inRange(obj, lower_green, upper_green)
+    masked_image = np.copy(obj)
+
+    masked_image[mask == 255] = [0, 0, 0]
+    
+    crop_room= room[Start_h:end_h,start_w:end_w]
+    mask2 = 255 - mask
+
+    masked_image2 = np.copy(crop_room)
+    
+
+    masked_image2[mask2 != 0] = [255,255, 255]
+    
+    
+    complete_image =  masked_image + masked_image2
+   
+
+    room[Start_h:end_h,start_w:end_w] = complete_image[0:obj_height1,0:obj_width1]
+    
+    
+    return (room)
 
 def add_obj(room, obj, X, Y):
+    
+    global mcolor
     
     Y = 660  - Y 
     X = X + 160
     # starting positions
-
+    
     room_height,room_width,room_channels = room.shape
     obj_height,obj_width,obj_channels = obj.shape
-    print(X, Y)
-
+    print(obj_height,obj_width)
+    
+    if (obj_height == 567 and  obj_width==803):
+        obj = cv2.resize(obj,(400,400))
+        obj_height,obj_width,obj_channels = obj.shape
+        
+    if (obj_height == 519 and  obj_width==464):
+        obj = cv2.resize(obj,(450,350))
+        obj_height,obj_width,obj_channels = obj.shape
+    
+    
     
     if(obj_width > 0.5*room_width):
         print("change width")
@@ -65,50 +107,61 @@ def add_obj(room, obj, X, Y):
             if(Start_height < 0):
                 print("case1_if")
                  #######################done
-                room[0:obj_height, 0:obj_width] = obj[0:obj_height, 0:obj_width]
+                room = add_obj_exactly( obj ,room ,0,obj_height, 0,obj_width)
+                #room [ room == [255] ] = [0,255 , 0]
+                #room[0:obj_height, 0:obj_width] = obj[0:obj_height, 0:obj_width]
                 
             elif(Start_height + obj_height > room_height ):
                 print("case1_elif")
                 ##############################
-                room[room_height-obj_height:room_height,0:obj_width] = obj[0:obj_height,0:obj_width]
+                #room [ room == [255] ] = [0,255 , 0]
+                room = add_obj_exactly( obj ,room , room_height-obj_height , room_height,0 , obj_width)
+                #room[room_height-obj_height:room_height,0:obj_width] = obj[0:obj_height,0:obj_width]
                 
                 
             else:
                 print("case1_else")
                 #######S########
-                room[Start_height:Start_height+obj_height,0:obj_width] = obj[0:obj_height,0:obj_width]
+                #room [ room == [255] ] = [0,255 , 0]
+                room = add_obj_exactly( obj ,room , Start_height, Start_height+obj_height,0 , obj_width)
+                #room[Start_height:Start_height+obj_height,0:obj_width] = obj[0:obj_height,0:obj_width]
               
 
         #Case 2
         elif(Start_width +obj_width > room_width):
             if(Start_height < 0):
                 print("case2_if")
-                room[0:obj_height,room_width-obj_width:room_width+obj_width] = obj[0:obj_height,0:obj_width]
+                room = add_obj_exactly( obj ,room ,0 , obj_height,room_width-obj_width , room_width+obj_width)
+                #room[0:obj_height,room_width-obj_width:room_width+obj_width] = obj[0:obj_height,0:obj_width]
                 
             elif(Start_height + obj_height > room_height ):
                 print("case2_elif")
-                room[room_height-obj_height:room_height+obj_height,room_width-obj_width:room_width+obj_width] = obj[0:obj_height,0:obj_width]
+                room = add_obj_exactly( obj ,room , room_height-obj_height , room_height+obj_height,room_width-obj_width, room_width+obj_width) 
+                #room[room_height-obj_height:room_height+obj_height,room_width-obj_width:room_width+obj_width] = obj[0:obj_height,0:obj_width]
                
             else:
                 print("case2_else")
-                room[Start_height:Start_height+obj_height,room_width-obj_width:room_width+obj_width] = obj[0:obj_height,0:obj_width]
+                room = add_obj_exactly( obj ,room , Start_height,Start_height+obj_height,room_width-obj_width,room_width+obj_width) 
+                #room[Start_height:Start_height+obj_height,room_width-obj_width:room_width+obj_width] = obj[0:obj_height,0:obj_width]
                 
         #Case 3
         elif(Start_height < 0):
             print("case3")
             ################
+            room = add_obj_exactly( obj ,room , 0 , obj_height, Start_width , Start_width + obj_width )
             room[0:obj_height, Start_width:Start_width + obj_width] = obj[0:obj_height, 0:obj_width]
            
         
         elif(Start_height + obj_height > room_height ):
             print("case_elif")
-            room[room_height-obj_height:room_height+obj_height,Start_width:Start_width+obj_width] = obj[0:obj_height,0:obj_width]
+            room = add_obj_exactly( obj ,room , room_height-obj_height , room_height+obj_height,Start_width , Start_width+obj_width)
+            #room[room_height-obj_height:room_height+obj_height,Start_width:Start_width+obj_width] = obj[0:obj_height,0:obj_width]
             
         
         else:  
             print("case_else")
-            print(X, Y)
-            room[Start_height:Start_height+obj_height,Start_width:Start_width+obj_width] = obj[0:obj_height,0:obj_width]
+            room = add_obj_exactly( obj ,room , Start_height , Start_height+obj_height,Start_width , Start_width+obj_width)
+            #room[Start_height:Start_height+obj_height,Start_width:Start_width+obj_width] = obj[0:obj_height,0:obj_width]
             
     
     return(room)
@@ -205,7 +258,7 @@ def Simple_Wall(image_src='wallimages/wall4_2.jpg', color=(5, 94, 76, 0.2)):
     (thresh, blackAndWhiteImage) = cv2.threshold(gray_image, 200, 255, cv2.THRESH_BINARY)
 
     # edges = cv.Canny(gray_image,100,200)
-    cnts, hierarchy = cv2.findContours(blackAndWhiteImage, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
+    _, cnts, hierarchy = cv2.findContours(blackAndWhiteImage, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
 
     # Find the index of the largest contour
     areas = [cv2.contourArea(c) for c in cnts]
@@ -238,7 +291,7 @@ def Simple_3Walls(image_src='room3.jpg', color=(5, 94, 76, 0.2)):
 
 
     # edges = cv2.Canny(gray_image,100,200)
-    cnts, hierarchy = cv2.findContours(blackAndWhiteImage, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
+    _ , cnts, hierarchy = cv2.findContours(blackAndWhiteImage, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
 
     # Find the index of the largest contour
     areas = [cv2.contourArea(c) for c in cnts]
@@ -273,7 +326,7 @@ def Simple_Chair(image_src='wallimages/wall8.jpg', color=(5, 94, 76, 0.2)):
     (thresh, blackAndWhiteImage) = cv2.threshold(gray_image, 168, 255, cv2.THRESH_BINARY)
 
     # edges = cv.Canny(gray_image,100,200)
-    cnts, hierarchy = cv2.findContours(blackAndWhiteImage, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
+    _ , cnts, hierarchy = cv2.findContours(blackAndWhiteImage, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
 
     # Find the index of the largest contour (wall)
     areas = [cv2.contourArea(c) for c in cnts]
@@ -295,7 +348,7 @@ def Long_Chair(image_src='wallimages/wall55.jpe', color=(5, 94, 76, 0.2)):
     (thresh, blackAndWhiteImage) = cv2.threshold(gray_image, 142, 255, cv2.THRESH_BINARY)
 
     # edges = cv.Canny(gray_image,100,200)
-    cnts, hierarchy = cv2.findContours(blackAndWhiteImage, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
+    _ , cnts, hierarchy = cv2.findContours(blackAndWhiteImage, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
 
     # Find the index of the largest contour (wall)
     areas = [cv2.contourArea(c) for c in cnts]
@@ -464,10 +517,10 @@ class WallWindow(Screen):
         self.test.source="test2.jpg"
         self.test.reload()
 class ObjWindow(Screen):
-    mc1 = StringProperty("obj1.jpeg")
-    mc2 = StringProperty("obj2.jpg")
-    mc3 = StringProperty("obj5.jpg")
-    mc4 = StringProperty("chair8.jpeg")
+    mc1 = StringProperty("chair4.jpeg")
+    mc2 = StringProperty("bed2.jpg")
+    mc3 = StringProperty("chair10.png")#bed
+    mc4 = StringProperty("chair11.jpg")#aa
 
     obj1=ObjectProperty(None)
     obj2 = ObjectProperty(None)

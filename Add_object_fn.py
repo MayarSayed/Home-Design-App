@@ -75,7 +75,8 @@ def add_obj(room,obj,X,Y):
         
         elif(Start_height + obj_height > room_height ):
             print("case_elif")
-            room[room_height-obj_height:room_height+obj_height,Start_width:Start_width+obj_width] = obj[0:obj_height,0:obj_width]
+            room = add_obj_exactly( obj ,room , room_height-obj_height , room_height,Start_width , Start_width+obj_width)
+            #room[room_height-obj_height:room_height,Start_width:Start_width+obj_width] = obj[0:obj_height,0:obj_width]
             
         
         else:  
@@ -88,34 +89,34 @@ def add_obj(room,obj,X,Y):
 
 ###################
 
-def add_obj_exactly( image ,background_image ):
+def add_obj_exactly( obj ,room , Start_h , end_h ,start_w , end_w):
     
-    obj_height1,obj_width1,obj_channels1 = image.shape
+    obj_height1,obj_width1,obj_channels1 = obj.shape
 
     lower_green = np.array([255, 25, 255]) 
     upper_green = np.array([255, 255,255])
 
-    mask = cv2.inRange(image, lower_green, upper_green)
-    masked_image = np.copy(image)
+    mask = cv2.inRange(obj, lower_green, upper_green)
+    masked_image = np.copy(obj)
 
     masked_image[mask != 0] = [255, 255, 255]
 
             ###########################
-    fixed_background_image = cv2. cvtColor(background_image, cv2. COLOR_BGR2RGB)
+    fixed_room = cv2. cvtColor(room, cv2. COLOR_BGR2RGB)
 
 
-    crop_background_image = fixed_background_image[400:obj_height1+400,0:obj_width1]
+    crop_room= fixed_room[Start_h:end_h,start_w:end_w]
     mask2 = 255 - mask
 
-    masked_image2 = np.copy(crop_background_image)
+    masked_image2 = np.copy(crop_room)
 
     masked_image2[mask2 != 0] = [255,255, 255]
 
     complete_image = + masked_image + masked_image2
 
-    fixed_background_image[400:obj_height1+400,0:obj_width1] = complete_image[0:obj_height1,0:obj_width1]
+    fixed_room[Start_h:end_h,start_w:end_w] = complete_image[0:obj_height1,0:obj_width1]
 
-    return (fixed_background_image)
+    return (fixed_room)
 
 
 ###########################################################################
@@ -131,6 +132,9 @@ room_after = add_obj(room,obj,400,1000)
 plt.imshow(room_after)
 plt.show()   
 
+res = add_obj_exactly( obj ,room , 400, (400+obj_height) , 0 ,obj_width  )
+plt.imshow(res)
+plt.show() 
 
 #print(obj_height,obj_width,obj_channels)
 #print(room_height,room_width,room_channels)
@@ -138,11 +142,9 @@ plt.show()
 image = mpimg.imread('C:/Users/Sara/Documents/GitHub2/Home-Design-App/new/obj4.jpg')
 background_image = mpimg.imread('C:/Users/Sara/Documents/GitHub2/Home-Design-App/new/room1.jpg')
 
-res = add_obj_exactly( image ,background_image )
 
 #cv2.imshow("complete_image",fixed_background_image)
-plt.imshow(res)
-plt.show()   
+  
 
 #cv2.imshow("complete_image",fixed_background_image)
 #plt.show()   
