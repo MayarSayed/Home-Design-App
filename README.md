@@ -17,7 +17,7 @@ or
 2. For Android only => click capture to take your own objects by the camera  
 (if your caputering photo contains more than one object the app will detect the several objects and let you choose one of them)
 3. Finally, Click on the place you want to replace the object in the room  
--- Screen Shots :  
+ 
 
 ### 3. Save the room picture by the new edits on your device
 
@@ -25,6 +25,7 @@ or
 ### -- Desktop Application :  
 Developed By Kivy which is an open source Python library which is used to create applications on Windows, Linux, MacOS, Android and iOS.  
 --- Screen Shots:  
+![](ScreenShots/desktop.png)
 
 ### -- Android Application :  
 --- Configurations used to run Python/Kivy application to an Android :  
@@ -46,3 +47,5 @@ Step 7) Open the Terminal in your virtual machine and run the following commands
 - cd KivyHelloWorld - buildozer init - sudo apt update - sudo apt install -y git zip unzip openjdk-8-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev - pip3 install --user --upgrade cython virtualenv - Sudo apt-get install cython - buildozer android debug deploy run  
 
 --- Screen Shots :
+![](ScreenShots/s4.jpg)
+![](ScreenShots/s1.jpg)
