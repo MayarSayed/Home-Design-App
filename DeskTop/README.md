@@ -1,6 +1,6 @@
 # Decoration Application
 The decoration play a major role in determining the mood of the place, from this point our project idea come in. 
-## - Project Description: 
+## Project Description: 
   It is a cross Platform that can work on both Desktop and android devices to help imagine changes in the decoration of a              room/place, saves the time and reach high quality as possible.
 
 ## Project main Features:
