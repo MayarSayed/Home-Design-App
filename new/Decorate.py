@@ -34,13 +34,20 @@ y_clk=0
 
 
 def add_obj(room, obj, X, Y):
+    
     obj_height, obj_width, obj_channels = obj.shape
-
+    Y = Y - 479
     # starting positions
     Start_height = math.floor(Y - (obj_height / 2))
     Start_width = math.floor(X - (obj_width / 2))
     room_height, room_width, room_channels = room.shape
+    if(obj_width > 0.5*room_width):
+       obj = cv2.resize(obj,(math.floor(obj_width*0.4),math.floor(obj_height )))
+       obj_height,obj_width,obj_channels = obj.shape
 
+    if(obj_height > 0.5*room_height):
+       obj = cv2.resize(obj,(math.floor(obj_width),math.floor(obj_height*0.4 )))
+       obj_height,obj_width,obj_channels = obj.shape
     if (room_height > obj_height and room_width > obj_width):
         # Case 1
         if (Start_width < 0):
@@ -431,7 +438,7 @@ class WallWindow(Screen):
         self.test.source="test2.jpg"
         self.test.reload()
 class ObjWindow(Screen):
-    mc1 = StringProperty("obj1.jpg")
+    mc1 = StringProperty("obj1.jpeg")
     mc2 = StringProperty("obj2.jpg")
     mc3 = StringProperty("obj3.jpg")
     mc4 = StringProperty("obj4.jpg")

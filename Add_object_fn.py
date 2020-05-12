@@ -15,7 +15,14 @@ def add_obj(room,obj,X,Y):
     Start_height = math.floor(Y - (obj_height/2))
     Start_width = math.floor(X -(obj_width/2))
     room_height,room_width,room_channels = room.shape
-    
+    if(obj_width > 0.5*room_width):
+       obj = cv2.resize(obj,(math.floor(obj_width*0.4),math.floor(obj_height )))
+       obj_height,obj_width,obj_channels = obj.shape
+
+    if(obj_height > 0.5*room_height):
+       obj = cv2.resize(obj,(math.floor(obj_width),math.floor(obj_height*0.4 )))
+       obj_height,obj_width,obj_channels = obj.shape
+       
     if(room_height > obj_height and room_width > obj_width):
         #Case 1
         if(Start_width < 0):
@@ -56,14 +63,14 @@ def add_obj(room,obj,X,Y):
     
     return(room)
 
-obj = cv2.imread('E:/Mayar kolya/Image processing/Decoration Project/testimages/kanba4.jpeg')
+obj = cv2.imread('E:/Mayar kolya/GitHub repos/Home-Design-App/new/obj1.jpeg')
  
 obj_height,obj_width,obj_channels = obj.shape
 
-room = cv2.imread('E:/Mayar kolya/GitHub repos/Home-Design-App/new/room3.jpg')
+room = cv2.imread('E:/Mayar kolya/GitHub repos/Home-Design-App/new/room1.jpg')
 room_height,room_width,room_channels = room.shape
 
-room_after = add_obj(room,obj,200,400)
+room_after = add_obj(room,obj,600,630)
 plt.imshow(room_after)
 plt.show()
 #print(obj_height,obj_width,obj_channels)
