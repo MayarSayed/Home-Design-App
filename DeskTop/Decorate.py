@@ -32,87 +32,135 @@ import math
 x_clk=0
 y_clk=0
 
+def add_obj_exactly( obj ,room , Start_h , end_h ,start_w , end_w):
+    
+    obj_height1,obj_width1,obj_channels1 = obj.shape
+
+    lower_green = np.array([240, 240, 240]) 
+    upper_green = np.array([255, 255,255])
+
+    mask = cv2.inRange(obj, lower_green, upper_green)
+    masked_image = np.copy(obj)
+
+    masked_image[mask == 255] = [0, 0, 0]
+    
+    crop_room= room[Start_h:end_h,start_w:end_w]
+    mask2 = 255 - mask
+
+    masked_image2 = np.copy(crop_room)
+    
+
+    masked_image2[mask2 != 0] = [255,255, 255]
+    
+    
+    complete_image =  masked_image + masked_image2
+   
+
+    room[Start_h:end_h,start_w:end_w] = complete_image[0:obj_height1,0:obj_width1]
+    
+    
+    return (room)
 
 def add_obj(room, obj, X, Y):
-    Y = 660 - Y
+    
+   
+    Y = 660  - Y 
     X = X + 160
     # starting positions
-
-    room_height, room_width, room_channels = room.shape
-    obj_height, obj_width, obj_channels = obj.shape
-    print(X, Y)
-
-    if (obj_width > 0.5 * room_width):
+    
+    room_height,room_width,room_channels = room.shape
+    obj_height,obj_width,obj_channels = obj.shape
+    print(obj_height,obj_width)
+    
+    if (obj_height == 567 and  obj_width==803):
+        obj = cv2.resize(obj,(400,400))
+        obj_height,obj_width,obj_channels = obj.shape
+        
+    if (obj_height == 519 and  obj_width==464):
+        obj = cv2.resize(obj,(450,350))
+        obj_height,obj_width,obj_channels = obj.shape
+    
+    
+    
+    if(obj_width > 0.5*room_width):
         print("change width")
-        obj = cv2.resize(obj, (math.floor(room_width * 0.5), math.floor(obj_height)))
-        obj_height, obj_width, obj_channels = obj.shape
+        obj = cv2.resize(obj,(math.floor(room_width*0.5),math.floor(obj_height )))
+        obj_height,obj_width,obj_channels = obj.shape
 
-    if (obj_height > 0.5 * room_height):
+
+    if(obj_height > 0.5*room_height):
         print("change height")
-        obj = cv2.resize(obj, (math.floor(obj_width), math.floor(room_height * 0.5)))
-        obj_height, obj_width, obj_channels = obj.shape
-
-    Start_height = math.floor(Y - (obj_height / 2))
-    Start_width = math.floor(X - (obj_width / 2))
-
-    if (room_height > obj_height and room_width > obj_width):
-        # Case 1
-        if (Start_width < 0):
-            if (Start_height < 0):
+        obj = cv2.resize(obj,(math.floor(obj_width),math.floor(room_height*0.5 )))
+        obj_height,obj_width,obj_channels = obj.shape
+    
+    Start_height = math.floor(Y - (obj_height/2))
+    Start_width = math.floor(X -(obj_width/2))
+       
+       
+    if(room_height > obj_height and room_width > obj_width):
+        #Case 1
+        if(Start_width < 0):
+            if(Start_height < 0):
                 print("case1_if")
-                #######################done
-                room[0:obj_height, 0:obj_width] = obj[0:obj_height, 0:obj_width]
-
-            elif (Start_height + obj_height > room_height):
+                 #######################done
+                room = add_obj_exactly( obj ,room ,0,obj_height, 0,obj_width)
+                #room [ room == [255] ] = [0,255 , 0]
+                #room[0:obj_height, 0:obj_width] = obj[0:obj_height, 0:obj_width]
+                
+            elif(Start_height + obj_height > room_height ):
                 print("case1_elif")
                 ##############################
-                room[room_height - obj_height:room_height, 0:obj_width] = obj[0:obj_height, 0:obj_width]
-
-
+                #room [ room == [255] ] = [0,255 , 0]
+                room = add_obj_exactly( obj ,room , room_height-obj_height , room_height,0 , obj_width)
+                #room[room_height-obj_height:room_height,0:obj_width] = obj[0:obj_height,0:obj_width]
+                
+                
             else:
                 print("case1_else")
                 #######S########
-                room[Start_height:Start_height + obj_height, 0:obj_width] = obj[0:obj_height, 0:obj_width]
+                #room [ room == [255] ] = [0,255 , 0]
+                room = add_obj_exactly( obj ,room , Start_height, Start_height+obj_height,0 , obj_width)
+                #room[Start_height:Start_height+obj_height,0:obj_width] = obj[0:obj_height,0:obj_width]
+              
 
-
-        # Case 2
-        elif (Start_width + obj_width > room_width):
-            if (Start_height < 0):
+        #Case 2
+        elif(Start_width +obj_width > room_width):
+            if(Start_height < 0):
                 print("case2_if")
-                room[0:obj_height, room_width - obj_width:room_width + obj_width] = obj[0:obj_height, 0:obj_width]
-
-            elif (Start_height + obj_height > room_height):
+                room = add_obj_exactly( obj ,room ,0 , obj_height,room_width-obj_width , room_width+obj_width)
+                #room[0:obj_height,room_width-obj_width:room_width+obj_width] = obj[0:obj_height,0:obj_width]
+                
+            elif(Start_height + obj_height > room_height ):
                 print("case2_elif")
-                room[room_height - obj_height:room_height + obj_height,
-                room_width - obj_width:room_width + obj_width] = obj[0:obj_height, 0:obj_width]
-
+                room = add_obj_exactly( obj ,room , room_height-obj_height , room_height+obj_height,room_width-obj_width, room_width+obj_width) 
+                #room[room_height-obj_height:room_height+obj_height,room_width-obj_width:room_width+obj_width] = obj[0:obj_height,0:obj_width]
+               
             else:
                 print("case2_else")
-                room[Start_height:Start_height + obj_height, room_width - obj_width:room_width + obj_width] = obj[
-                                                                                                              0:obj_height,
-                                                                                                              0:obj_width]
-
-        # Case 3
-        elif (Start_height < 0):
+                room = add_obj_exactly( obj ,room , Start_height,Start_height+obj_height,room_width-obj_width,room_width+obj_width) 
+                #room[Start_height:Start_height+obj_height,room_width-obj_width:room_width+obj_width] = obj[0:obj_height,0:obj_width]
+                
+        #Case 3
+        elif(Start_height < 0):
             print("case3")
             ################
+            room = add_obj_exactly( obj ,room , 0 , obj_height, Start_width , Start_width + obj_width )
             room[0:obj_height, Start_width:Start_width + obj_width] = obj[0:obj_height, 0:obj_width]
-
-
-        elif (Start_height + obj_height > room_height):
+           
+        
+        elif(Start_height + obj_height > room_height ):
             print("case_elif")
-            room[room_height - obj_height:room_height + obj_height, Start_width:Start_width + obj_width] = obj[
-                                                                                                           0:obj_height,
-                                                                                                           0:obj_width]
-
-
-        else:
+            room = add_obj_exactly( obj ,room , room_height-obj_height , room_height+obj_height,Start_width , Start_width+obj_width)
+            #room[room_height-obj_height:room_height+obj_height,Start_width:Start_width+obj_width] = obj[0:obj_height,0:obj_width]
+            
+        
+        else:  
             print("case_else")
-            print(X, Y)
-            room[Start_height:Start_height + obj_height, Start_width:Start_width + obj_width] = obj[0:obj_height,
-                                                                                                0:obj_width]
-
-    return (room)
+            room = add_obj_exactly( obj ,room , Start_height , Start_height+obj_height,Start_width , Start_width+obj_width)
+            #room[Start_height:Start_height+obj_height,Start_width:Start_width+obj_width] = obj[0:obj_height,0:obj_width]
+            
+    
+    return(room)
 
 
 def Detect_Objects(img):
@@ -198,7 +246,7 @@ def Simple_Wall(image_src='wallimages/wall4_2.jpg', color=(5, 94, 76, 0.2)):
 
     # Fill in the Wall with the Specific Color
     cv2.drawContours(image, cnts, max_index, color, -1)
-    image = cv2.resize(image, (1280, 750), interpolation=cv2.INTER_AREA)
+    image = cv2.resize(image, (1750, 750), interpolation=cv2.INTER_AREA)
 
     return image
 
@@ -223,7 +271,7 @@ def Simple_3Walls(image_src='room3.jpg', color=(5, 94, 76, 0.2)):
 
 
     # edges = cv2.Canny(gray_image,100,200)
-    cnts, hierarchy = cv2.findContours(blackAndWhiteImage, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
+    _ , cnts, hierarchy = cv2.findContours(blackAndWhiteImage, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
 
     # Find the index of the largest contour
     areas = [cv2.contourArea(c) for c in cnts]
@@ -450,10 +498,10 @@ class WallWindow(Screen):
         self.test.source="test2.jpg"
         self.test.reload()
 class ObjWindow(Screen):
-    mc1 = StringProperty("obj1.jpeg")
-    mc2 = StringProperty("obj2.jpg")
-    mc3 = StringProperty("obj3.jpg")
-    mc4 = StringProperty("obj4.jpg")
+    mc1 = StringProperty("bed2.jpg")
+    mc2 = StringProperty("chair11.jpg")
+    mc3 = StringProperty("chair10.png")
+    mc4 = StringProperty("obj1.jpg")
 
     obj1=ObjectProperty(None)
     obj2 = ObjectProperty(None)

@@ -66,7 +66,6 @@ def add_obj_exactly( obj ,room , Start_h , end_h ,start_w , end_w):
 
 def add_obj(room, obj, X, Y):
     
-    global mcolor
     
     Y = 660  - Y 
     X = X + 160
@@ -520,7 +519,7 @@ class ObjWindow(Screen):
     mc1 = StringProperty("chair4.jpeg")
     mc2 = StringProperty("bed2.jpg")
     mc3 = StringProperty("chair10.png")#bed
-    mc4 = StringProperty("chair11.jpg")#aa
+    mc4 = StringProperty("obj5.jpg")#aa
 
     obj1=ObjectProperty(None)
     obj2 = ObjectProperty(None)
